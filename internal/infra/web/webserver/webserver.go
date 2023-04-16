@@ -10,7 +10,7 @@ import (
 type EchoHandlerCompose struct {
 	method  string
 	path    string
-	handler echo.HandlerFunc
+	Handler func(c echo.Context) error
 }
 
 type WebServer struct {
@@ -27,16 +27,16 @@ func NewWebServer(serverPort string) *WebServer {
 	}
 }
 
-func (s *WebServer) AddHandler(method, path string, handler echo.HandlerFunc) {
+func (s *WebServer) AddHandler(method, path string, handler func(c echo.Context) error) {
 	s.Handlers = append(s.Handlers, EchoHandlerCompose{
-		method: method, path: path, handler: handler,
+		method: method, path: path, Handler: handler,
 	})
 }
 
 func (s *WebServer) Start() {
 	s.Router.Use(middleware.Logger())
 	for _, handlerCompose := range s.Handlers {
-		s.Router.Add(handlerCompose.method, handlerCompose.path, handlerCompose.handler)
+		s.Router.Add(handlerCompose.method, handlerCompose.path, handlerCompose.Handler)
 	}
 	http.ListenAndServe(s.WebServerPort, s.Router)
 }

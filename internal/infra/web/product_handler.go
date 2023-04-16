@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
 	"github.com/vitorconti/go-products/internal/entity"
 	"github.com/vitorconti/go-products/internal/usecase"
 	"github.com/vitorconti/go-products/pkg/events"
@@ -27,23 +28,24 @@ func NewProductHandler(
 	}
 }
 
-func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *ProductHandler) Create(c echo.Context) error {
 	var dto usecase.ProductInputDTO
-	err := json.NewDecoder(r.Body).Decode(&dto)
+	err := json.NewDecoder(c.Request().Body).Decode(&dto)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		http.Error(c.Response().Writer, err.Error(), http.StatusBadRequest)
+		return err
 	}
 
 	createProduct := usecase.NewCreateProductUseCase(h.ProductRepository, h.ProductCreatedEvent, h.EventDispatcher)
 	output, err := createProduct.Execute(dto)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		http.Error(c.Response().Writer, err.Error(), http.StatusInternalServerError)
+		return err
 	}
-	err = json.NewEncoder(w).Encode(output)
+	err = json.NewEncoder(c.Response().Writer).Encode(output)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		http.Error(c.Response().Writer, err.Error(), http.StatusInternalServerError)
+		return err
 	}
+	return nil
 }

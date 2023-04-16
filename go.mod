@@ -3,6 +3,7 @@ module github.com/vitorconti/go-products
 go 1.19
 
 require (
+	github.com/bxcodec/faker/v3 v3.8.1
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/google/wire v0.5.0
 	github.com/labstack/echo/v4 v4.10.2
