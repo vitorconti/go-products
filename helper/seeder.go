@@ -2,6 +2,7 @@ package helper
 
 import (
 	"database/sql"
+
 	"github.com/bxcodec/faker/v3"
 )
 
@@ -21,7 +22,7 @@ func GenerateTableProduct(db *sql.DB) {
 func SeedTableProduct(db *sql.DB) error {
 
 	var count int
-	row := db.QueryRow("SELECT COUNT(*) FROM product")
+	row := db.QueryRow("SELECT COUNT(*) FROM products")
 	err := row.Scan(&count)
 	if err != nil {
 		return err
@@ -38,7 +39,7 @@ func SeedTableProduct(db *sql.DB) error {
 			panic(err)
 		}
 
-		_, err = db.Exec("INSERT INTO product (name,description, price) VALUES (?, ?, ?)", product.Name, product.Price, product.Description)
+		_, err = db.Exec("INSERT INTO products (name,description, price) VALUES (?, ?, ?)", product.Name, product.Description, product.Price)
 		if err != nil {
 			return err
 		}
@@ -50,5 +51,5 @@ func SeedTableProduct(db *sql.DB) error {
 type product struct {
 	Name        string  `faker:"name"`
 	Description string  `faker:"sentence"`
-	Price       float64 `faker:"price"`
+	Price       float32 `faker:"oneof: 4.95, 9.99, 31997.97"`
 }
