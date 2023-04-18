@@ -1,8 +1,8 @@
 package web
 
 import (
-	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/vitorconti/go-products/internal/entity"
@@ -30,22 +30,41 @@ func NewProductHandler(
 
 func (h *ProductHandler) Create(c echo.Context) error {
 	var dto usecase.ProductInputDTO
-	err := json.NewDecoder(c.Request().Body).Decode(&dto)
-	if err != nil {
-		http.Error(c.Response().Writer, err.Error(), http.StatusBadRequest)
-		return err
+	if err := c.Bind(&dto); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "One more parameters could be wrong."})
 	}
 
 	createProduct := usecase.NewCreateProductUseCase(h.ProductRepository, h.ProductCreatedEvent, h.EventDispatcher)
 	output, err := createProduct.Execute(dto)
 	if err != nil {
-		http.Error(c.Response().Writer, err.Error(), http.StatusInternalServerError)
-		return err
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-	err = json.NewEncoder(c.Response().Writer).Encode(output)
+
+	return c.JSON(http.StatusOK, output)
+}
+
+func (h *ProductHandler) Retrive(c echo.Context) error {
+	var dto usecase.ProductPaginationQueryParamsDTO
+
+	page, err := strconv.Atoi(c.QueryParam("page"))
 	if err != nil {
-		http.Error(c.Response().Writer, err.Error(), http.StatusInternalServerError)
-		return err
+		page = 1
 	}
-	return nil
+	dto.Page = page
+
+	limit, err := strconv.Atoi(c.QueryParam("limit"))
+	if err != nil {
+		limit = 10
+	}
+	dto.Limit = limit
+
+	offset := (page) * limit
+	dto.Offset = offset
+	retrievedProduct := usecase.NewRetriveProductUseCase(h.ProductRepository, h.ProductCreatedEvent, h.EventDispatcher)
+	output, err := retrievedProduct.Execute(dto)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	return c.JSON(http.StatusOK, output)
+
 }

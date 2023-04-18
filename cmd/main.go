@@ -34,11 +34,14 @@ func main() {
 		RabbitMQChannel: rabbitMQChannel,
 	})
 
-	//createProductUseCase := NewCreateProductUseCase(db, eventDispatcher)
+	eventDispatcher.Register("ProductRetrived", &handler.ProductRetrivedHandler{
+		RabbitMQChannel: rabbitMQChannel,
+	})
 
 	webserver := webserver.NewWebServer(loadedConfigs.WebServerPort)
 	productHandler := ProductHandler(db, eventDispatcher)
 	webserver.AddHandler("POST", "/product", productHandler.Create)
+	webserver.AddHandler("GET", "/product", productHandler.Retrive)
 	fmt.Println("Starting web server on port", loadedConfigs.WebServerPort)
 	webserver.Start()
 

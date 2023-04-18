@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/vitorconti/go-products/internal/entity"
 )
@@ -24,4 +25,25 @@ func (r *ProductRepository) Save(product *entity.Product) error {
 		return err
 	}
 	return nil
+}
+func (r *ProductRepository) Find(limit, offset int) ([]entity.Product, error) {
+	fmt.Printf("SELECT * FROM products ORDER BY 1 LIMIT %d OFFSET %d", limit, offset)
+	rows, err := r.Db.Query(fmt.Sprintf("SELECT * FROM products ORDER BY 1 LIMIT %d OFFSET %d", limit, offset))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	products := make([]entity.Product, 0)
+	for rows.Next() {
+		var product entity.Product
+		err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price)
+		if err != nil {
+			return nil, err
+		}
+
+		products = append(products, product)
+	}
+
+	return products, nil
 }
