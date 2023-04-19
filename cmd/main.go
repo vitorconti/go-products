@@ -37,11 +37,15 @@ func main() {
 	eventDispatcher.Register("ProductRetrived", &handler.ProductRetrivedHandler{
 		RabbitMQChannel: rabbitMQChannel,
 	})
+	eventDispatcher.Register("ProductUpdated", &handler.ProductUpdatedHandler{
+		RabbitMQChannel: rabbitMQChannel,
+	})
 
 	webserver := webserver.NewWebServer(loadedConfigs.WebServerPort)
 	productHandler := ProductHandler(db, eventDispatcher)
 	webserver.AddHandler("POST", "/product", productHandler.Create)
 	webserver.AddHandler("GET", "/product", productHandler.Retrive)
+	webserver.AddHandler("PATCH", "/product", productHandler.Edit)
 	fmt.Println("Starting web server on port", loadedConfigs.WebServerPort)
 	webserver.Start()
 
