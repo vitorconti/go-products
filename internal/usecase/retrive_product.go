@@ -1,8 +1,7 @@
 package usecase
 
 import (
-	"strconv"
-
+	"github.com/vitorconti/go-products/internal/dto"
 	"github.com/vitorconti/go-products/internal/entity"
 	"github.com/vitorconti/go-products/pkg/events"
 )
@@ -31,20 +30,17 @@ func NewRetriveProductUseCase(
 	}
 }
 
-func (c *RetriveProductUseCase) Execute(input ProductPaginationQueryParamsDTO) ([]ProductOutputDTO, error) {
+func (c *RetriveProductUseCase) Execute(input ProductPaginationQueryParamsDTO) ([]dto.ProductOutputDTO, error) {
 
 	retrievedProducts, err := c.ProductRepository.Find(input.Limit, input.Offset)
 	if err != nil {
-		return []ProductOutputDTO{}, err
+		return []dto.ProductOutputDTO{}, err
 	}
-	outputDto := make([]ProductOutputDTO, 0, len(retrievedProducts))
+	outputDto := make([]dto.ProductOutputDTO, 0, len(retrievedProducts))
 	for _, retrievedProduct := range retrievedProducts {
-		parseId := strconv.Itoa(retrievedProduct.ID)
-		if err != nil {
-			return nil, err
-		}
-		product := ProductOutputDTO{
-			ID:          parseId,
+
+		product := dto.ProductOutputDTO{
+			ID:          retrievedProduct.ID,
 			Price:       retrievedProduct.Price,
 			Description: retrievedProduct.Description,
 		}

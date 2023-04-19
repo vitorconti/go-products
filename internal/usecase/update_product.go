@@ -1,31 +1,32 @@
 package usecase
 
 import (
+	"github.com/vitorconti/go-products/internal/dto"
 	"github.com/vitorconti/go-products/internal/entity"
 	"github.com/vitorconti/go-products/pkg/events"
-	"github.com/vitorconti/go-products/internal/dto"
 )
 
-type CreateProductUseCase struct {
+type UpdateProductUseCase struct {
 	ProductRepository entity.ProductRepositoryInterface
-	ProductCreated    events.EventInterface
+	ProductUpdated    events.EventInterface
 	EventDispatcher   events.EventDispatcherInterface
 }
 
-func NewCreateProductUseCase(
+func NewUpdateProductUseCase(
 	ProductRepository entity.ProductRepositoryInterface,
-	ProductCreated events.EventInterface,
+	ProductUpdated events.EventInterface,
 	EventDispatcher events.EventDispatcherInterface,
-) *CreateProductUseCase {
-	return &CreateProductUseCase{
+) *UpdateProductUseCase {
+	return &UpdateProductUseCase{
 		ProductRepository: ProductRepository,
-		ProductCreated:    ProductCreated,
+		ProductUpdated:    ProductUpdated,
 		EventDispatcher:   EventDispatcher,
 	}
 }
 
-func (c *CreateProductUseCase) Execute(input dto.ProductInputDTO) (dto.ProductOutputDTO, error) {
+func (c *UpdateProductUseCase) Execute(input dto.ProductInputDTO) (dto.ProductOutputDTO, error) {
 	product := entity.Product{
+		ID:          input.ID,
 		Name:        input.Name,
 		Description: input.Description,
 		Price:       input.Price,
@@ -41,8 +42,8 @@ func (c *CreateProductUseCase) Execute(input dto.ProductInputDTO) (dto.ProductOu
 		Description: input.Description,
 	}
 
-	c.ProductCreated.SetPayload(outputDto)
-	c.EventDispatcher.Dispatch(c.ProductCreated)
+	c.ProductUpdated.SetPayload(outputDto)
+	c.EventDispatcher.Dispatch(c.ProductUpdated)
 
 	return outputDto, nil
 }
