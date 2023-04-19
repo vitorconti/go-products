@@ -23,13 +23,25 @@ var setProductRepositoryDependency = wire.NewSet(
 var setEventDispatcherDependency = wire.NewSet(
 	events.NewEventDispatcher,
 	event.NewProductCreated,
+	event.NewProductUpdated,
+	event.NewProductRetrived,
 	wire.Bind(new(events.EventInterface), new(*event.ProductCreated)),
+	wire.Bind(new(events.EventInterface), new(*event.ProductUpdated)),
+	wire.Bind(new(events.EventInterface), new(*event.ProductRetrived)),
 	wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)),
 )
 
 var setProductCreatedEvent = wire.NewSet(
 	event.NewProductCreated,
 	wire.Bind(new(events.EventInterface), new(*event.ProductCreated)),
+)
+var setProductUpdateddEvent = wire.NewSet(
+	event.NewProductUpdated,
+	wire.Bind(new(events.EventInterface), new(*event.ProductUpdated)),
+)
+var setProductRetrivedEvent = wire.NewSet(
+	event.NewProductRetrived,
+	wire.Bind(new(events.EventInterface), new(*event.ProductRetrived)),
 )
 
 func NewCreateProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.CreateProductUseCase {
