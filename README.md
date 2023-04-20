@@ -54,6 +54,7 @@ Updates an existing product. The request body should contain JSON data with the 
 
 ```json
 {
+  "id" : 10
   "name": "Product Name",
   "description": "Product Description",
   "price": 10.99
