@@ -13,3 +13,11 @@ type ProductOutputDTO struct {
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 }
+type ProductDeletdDTO struct {
+	Message string
+}
+type ProductPaginationQueryParamsDTO struct {
+	Page   int
+	Limit  int
+	Offset int
+}

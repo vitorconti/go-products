@@ -6,12 +6,6 @@ import (
 	"github.com/vitorconti/go-products/pkg/events"
 )
 
-type ProductPaginationQueryParamsDTO struct {
-	Page   int
-	Limit  int
-	Offset int
-}
-
 type RetriveProductUseCase struct {
 	ProductRepository entity.ProductRepositoryInterface
 	ProductRetrived   events.EventInterface
@@ -30,7 +24,7 @@ func NewRetriveProductUseCase(
 	}
 }
 
-func (c *RetriveProductUseCase) Execute(input ProductPaginationQueryParamsDTO) ([]dto.ProductOutputDTO, error) {
+func (c *RetriveProductUseCase) Execute(input dto.ProductPaginationQueryParamsDTO) ([]dto.ProductOutputDTO, error) {
 
 	retrievedProducts, err := c.ProductRepository.Find(input.Limit, input.Offset)
 	if err != nil {
