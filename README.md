@@ -37,10 +37,8 @@ Usage
 The API has the following endpoints:
 
 GET /products
-Returns a list of all products.
+Returns a list of all products. This route accepts two query paramas: page and limit, the default values is 1 and 10
 
-GET /products/:id
-Returns a single product by ID.
 
 POST /products
 Creates a new product. The request body should contain JSON data with the following properties:
