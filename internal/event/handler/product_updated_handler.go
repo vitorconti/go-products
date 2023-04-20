@@ -21,7 +21,7 @@ func NewProductUpdatedHandler(rabbitMQChannel *amqp.Channel) *ProductUpdatedHand
 
 func (h *ProductUpdatedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Printf("Product created: %v", event.GetPayload())
+	fmt.Printf("Product updated: %v", event.GetPayload())
 	jsonOutput, _ := json.Marshal(event.GetPayload())
 
 	msgRabbitmq := amqp.Publishing{

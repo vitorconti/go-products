@@ -28,6 +28,7 @@ var setEventDispatcherDependency = wire.NewSet(
 	wire.Bind(new(events.EventInterface), new(*event.ProductCreated)),
 	wire.Bind(new(events.EventInterface), new(*event.ProductUpdated)),
 	wire.Bind(new(events.EventInterface), new(*event.ProductRetrived)),
+	wire.Bind(new(events.EventInterface), new(*event.ProductDeleted)),
 	wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)),
 )
 
@@ -35,13 +36,17 @@ var setProductCreatedEvent = wire.NewSet(
 	event.NewProductCreated,
 	wire.Bind(new(events.EventInterface), new(*event.ProductCreated)),
 )
-var setProductUpdateddEvent = wire.NewSet(
+var setProductUpdatedEvent = wire.NewSet(
 	event.NewProductUpdated,
 	wire.Bind(new(events.EventInterface), new(*event.ProductUpdated)),
 )
 var setProductRetrivedEvent = wire.NewSet(
 	event.NewProductRetrived,
 	wire.Bind(new(events.EventInterface), new(*event.ProductRetrived)),
+)
+var setProductDeletedEvent = wire.NewSet(
+	event.NewProductDeleted,
+	wire.Bind(new(events.EventInterface), new(*event.ProductDeleted)),
 )
 
 func NewCreateProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.CreateProductUseCase {
@@ -53,11 +58,63 @@ func NewCreateProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherI
 	return &usecase.CreateProductUseCase{}
 }
 
-func ProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.ProductHandler {
+func NewRetriveProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.RetriveProductUseCase {
+	wire.Build(
+		setProductRepositoryDependency,
+		setProductRetrivedEvent,
+		usecase.NewRetriveProductUseCase,
+	)
+	return &usecase.RetriveProductUseCase{}
+}
+func NewUpdateProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.UpdateProductUseCase {
+	wire.Build(
+		setProductRepositoryDependency,
+		setProductUpdatedEvent,
+		usecase.NewUpdateProductUseCase,
+	)
+	return &usecase.UpdateProductUseCase{}
+}
+
+func NewDeleteProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.DeleteProductUseCase {
+	wire.Build(
+		setProductRepositoryDependency,
+		setProductDeletedEvent,
+		usecase.NewDeleteProductUseCase,
+	)
+	return &usecase.DeleteProductUseCase{}
+}
+
+func CreateProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.CreateProductHandler {
 	wire.Build(
 		setProductRepositoryDependency,
 		setProductCreatedEvent,
-		web.NewProductHandler,
+		web.NewCreateProductHandler,
 	)
-	return &web.ProductHandler{}
+	return &web.CreateProductHandler{}
+}
+
+func RetriveProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.RetriveProductHandler {
+	wire.Build(
+		setProductRepositoryDependency,
+		setProductRetrivedEvent,
+		web.NewRetriveProductHandler,
+	)
+	return &web.RetriveProductHandler{}
+}
+
+func UpdateProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.UpdateProductHandler {
+	wire.Build(
+		setProductRepositoryDependency,
+		setProductUpdatedEvent,
+		web.NewUpdateProductHandler,
+	)
+	return &web.UpdateProductHandler{}
+}
+func DeleteProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.DeleteProductHandler {
+	wire.Build(
+		setProductRepositoryDependency,
+		setProductDeletedEvent,
+		web.NewDeleteProductHandler,
+	)
+	return &web.DeleteProductHandler{}
 }

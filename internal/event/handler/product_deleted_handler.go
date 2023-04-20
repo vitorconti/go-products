@@ -9,19 +9,19 @@ import (
 	"github.com/vitorconti/go-products/pkg/events"
 )
 
-type ProductRetrivedHandler struct {
+type ProductDeletedHandler struct {
 	RabbitMQChannel *amqp.Channel
 }
 
-func NewProductRetrivedHandler(rabbitMQChannel *amqp.Channel) *ProductRetrivedHandler {
-	return &ProductRetrivedHandler{
+func NewProductDeletedHandler(rabbitMQChannel *amqp.Channel) *ProductDeletedHandler {
+	return &ProductDeletedHandler{
 		RabbitMQChannel: rabbitMQChannel,
 	}
 }
 
-func (h *ProductRetrivedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup) {
+func (h *ProductDeletedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Printf("Product retrived: %v", event.GetPayload())
+	fmt.Printf("Product deleted: %v", event.GetPayload())
 	jsonOutput, _ := json.Marshal(event.GetPayload())
 
 	msgRabbitmq := amqp.Publishing{

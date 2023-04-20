@@ -30,21 +30,65 @@ func NewCreateProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherI
 	return createProductUseCase
 }
 
-func ProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.ProductHandler {
+func NewRetriveProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.RetriveProductUseCase {
+	productRepository := database.NewProductRepository(db)
+	productRetrived := event.NewProductRetrived()
+	retriveProductUseCase := usecase.NewRetriveProductUseCase(productRepository, productRetrived, eventDispatcher)
+	return retriveProductUseCase
+}
+
+func NewUpdateProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.UpdateProductUseCase {
+	productRepository := database.NewProductRepository(db)
+	productUpdated := event.NewProductUpdated()
+	updateProductUseCase := usecase.NewUpdateProductUseCase(productRepository, productUpdated, eventDispatcher)
+	return updateProductUseCase
+}
+
+func NewDeleteProductUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.DeleteProductUseCase {
+	productRepository := database.NewProductRepository(db)
+	productDeleted := event.NewProductDeleted()
+	deleteProductUseCase := usecase.NewDeleteProductUseCase(productRepository, productDeleted, eventDispatcher)
+	return deleteProductUseCase
+}
+
+func CreateProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.CreateProductHandler {
 	productRepository := database.NewProductRepository(db)
 	productCreated := event.NewProductCreated()
-	productHandler := web.NewProductHandler(eventDispatcher, productRepository, productCreated)
-	return productHandler
+	createProductHandler := web.NewCreateProductHandler(eventDispatcher, productRepository, productCreated)
+	return createProductHandler
+}
+
+func RetriveProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.RetriveProductHandler {
+	productRepository := database.NewProductRepository(db)
+	productRetrived := event.NewProductRetrived()
+	retriveProductHandler := web.NewRetriveProductHandler(eventDispatcher, productRepository, productRetrived)
+	return retriveProductHandler
+}
+
+func UpdateProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.UpdateProductHandler {
+	productRepository := database.NewProductRepository(db)
+	productUpdated := event.NewProductUpdated()
+	updateProductHandler := web.NewUpdateProductHandler(eventDispatcher, productRepository, productUpdated)
+	return updateProductHandler
+}
+
+func DeleteProductHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.DeleteProductHandler {
+	productRepository := database.NewProductRepository(db)
+	productDeleted := event.NewProductDeleted()
+	deleteProductHandler := web.NewDeleteProductHandler(eventDispatcher, productRepository, productDeleted)
+	return deleteProductHandler
 }
 
 // wire.go:
 
 var setProductRepositoryDependency = wire.NewSet(database.NewProductRepository, wire.Bind(new(entity.ProductRepositoryInterface), new(*database.ProductRepository)))
 
-var setEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewProductCreated, event.NewProductUpdated, event.NewProductRetrived, wire.Bind(new(events.EventInterface), new(*event.ProductCreated)), wire.Bind(new(events.EventInterface), new(*event.ProductUpdated)), wire.Bind(new(events.EventInterface), new(*event.ProductRetrived)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
+var setEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewProductCreated, event.NewProductUpdated, event.NewProductRetrived, wire.Bind(new(events.EventInterface), new(*event.ProductCreated)), wire.Bind(new(events.EventInterface), new(*event.ProductUpdated)), wire.Bind(new(events.EventInterface), new(*event.ProductRetrived)), wire.Bind(new(events.EventInterface), new(*event.ProductDeleted)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
 
 var setProductCreatedEvent = wire.NewSet(event.NewProductCreated, wire.Bind(new(events.EventInterface), new(*event.ProductCreated)))
 
-var setProductUpdateddEvent = wire.NewSet(event.NewProductUpdated, wire.Bind(new(events.EventInterface), new(*event.ProductUpdated)))
+var setProductUpdatedEvent = wire.NewSet(event.NewProductUpdated, wire.Bind(new(events.EventInterface), new(*event.ProductUpdated)))
 
 var setProductRetrivedEvent = wire.NewSet(event.NewProductRetrived, wire.Bind(new(events.EventInterface), new(*event.ProductRetrived)))
+
+var setProductDeletedEvent = wire.NewSet(event.NewProductDeleted, wire.Bind(new(events.EventInterface), new(*event.ProductDeleted)))

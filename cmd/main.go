@@ -42,10 +42,14 @@ func main() {
 	})
 
 	webserver := webserver.NewWebServer(loadedConfigs.WebServerPort)
-	productHandler := ProductHandler(db, eventDispatcher)
-	webserver.AddHandler("POST", "/product", productHandler.Create)
-	webserver.AddHandler("GET", "/product", productHandler.Retrive)
-	webserver.AddHandler("PATCH", "/product", productHandler.Edit)
+	createProductHandler := CreateProductHandler(db, eventDispatcher)
+	retriveProductHandler := RetriveProductHandler(db, eventDispatcher)
+	updateProductHandler := UpdateProductHandler(db, eventDispatcher)
+	deleteProductHandler := DeleteProductHandler(db, eventDispatcher)
+	webserver.AddHandler("POST", "/product", createProductHandler.Create)
+	webserver.AddHandler("GET", "/product", retriveProductHandler.Retrive)
+	webserver.AddHandler("PATCH", "/product", updateProductHandler.Edit)
+	webserver.AddHandler("DELETE", "/product/:id", deleteProductHandler.Remove)
 	fmt.Println("Starting web server on port", loadedConfigs.WebServerPort)
 	webserver.Start()
 
