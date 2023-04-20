@@ -2,15 +2,18 @@ FROM golang:1.19-alpine
 
 RUN apk update && apk add --no-cache git
 
-WORKDIR /app
+WORKDIR /
 
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
 COPY . .
-RUN go build -o myapp cmd/main.go cmd/wire_gen.go
+RUN wire
+RUN go get github.com/google/wire/cmd/wire && \
+    wire ./cmd && \
+    go build -o go-products-api ./cmd/main.go
 
 EXPOSE 8080
 
-CMD ["./myapp"]
+CMD ["./go-products-api"]
