@@ -38,8 +38,18 @@ func (r *ProductRepository) Edit(product *entity.Product) error {
 	}
 	return nil
 }
+func (r *ProductRepository) Remove(id int) error {
+	stmt, err := r.Db.Prepare("DELETE FROM products WHERE id=?")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func (r *ProductRepository) Find(limit, offset int) ([]entity.Product, error) {
-	fmt.Sprintf("SELECT * FROM products ORDER BY 1 LIMIT %d OFFSET %d", limit, offset)
 	rows, err := r.Db.Query(fmt.Sprintf("SELECT * FROM products ORDER BY 1 LIMIT %d OFFSET %d", limit, offset))
 	if err != nil {
 		return nil, err
