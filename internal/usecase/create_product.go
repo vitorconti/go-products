@@ -1,9 +1,9 @@
 package usecase
 
 import (
+	"github.com/vitorconti/go-products/internal/dto"
 	"github.com/vitorconti/go-products/internal/entity"
 	"github.com/vitorconti/go-products/pkg/events"
-	"github.com/vitorconti/go-products/internal/dto"
 )
 
 type CreateProductUseCase struct {
@@ -36,7 +36,7 @@ func (c *CreateProductUseCase) Execute(input dto.ProductInputDTO) (dto.ProductOu
 	}
 
 	outputDto := dto.ProductOutputDTO{
-		ID:          input.ID,
+		Name:        input.Name,
 		Price:       input.Price,
 		Description: input.Description,
 	}

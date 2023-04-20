@@ -49,8 +49,8 @@ func (h *ProductHandler) Edit(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "One more parameters could be wrong."})
 	}
 
-	createProduct := usecase.NewCreateProductUseCase(h.ProductRepository, h.ProductCreatedEvent, h.EventDispatcher)
-	output, err := createProduct.Execute(dto)
+	updateProduct := usecase.NewUpdateProductUseCase(h.ProductRepository, h.ProductCreatedEvent, h.EventDispatcher)
+	output, err := updateProduct.Execute(dto)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
@@ -73,7 +73,7 @@ func (h *ProductHandler) Retrive(c echo.Context) error {
 	}
 	dto.Limit = limit
 
-	offset := (page) * limit
+	offset := (page - 1) * limit
 	dto.Offset = offset
 	retrievedProduct := usecase.NewRetriveProductUseCase(h.ProductRepository, h.ProductCreatedEvent, h.EventDispatcher)
 	output, err := retrievedProduct.Execute(dto)

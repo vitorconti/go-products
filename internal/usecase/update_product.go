@@ -31,13 +31,17 @@ func (c *UpdateProductUseCase) Execute(input dto.ProductInputDTO) (dto.ProductOu
 		Description: input.Description,
 		Price:       input.Price,
 	}
+	if _, err := c.ProductRepository.FindOne(product.ID); err != nil {
+		return dto.ProductOutputDTO{}, err
+	}
 
-	if err := c.ProductRepository.Save(&product); err != nil {
+	if err := c.ProductRepository.Edit(&product); err != nil {
 		return dto.ProductOutputDTO{}, err
 	}
 
 	outputDto := dto.ProductOutputDTO{
 		ID:          input.ID,
+		Name:        input.Name,
 		Price:       input.Price,
 		Description: input.Description,
 	}

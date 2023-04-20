@@ -16,18 +16,30 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 }
 
 func (r *ProductRepository) Save(product *entity.Product) error {
-	stmt, err := r.Db.Prepare("INSERT INTO products (name,description) VALUES (?, ?)")
+	stmt, err := r.Db.Prepare("INSERT INTO products (name,description,price) VALUES (?, ?,?)")
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(product.Description, product.Price)
+	_, err = stmt.Exec(product.Name, product.Description, product.Price)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *ProductRepository) Edit(product *entity.Product) error {
+	stmt, err := r.Db.Prepare("UPDATE products SET name=?, description=?, price=? WHERE id=?")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(product.Name, product.Description, product.Price, product.ID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func (r *ProductRepository) Find(limit, offset int) ([]entity.Product, error) {
-	fmt.Printf("SELECT * FROM products ORDER BY 1 LIMIT %d OFFSET %d", limit, offset)
+	fmt.Sprintf("SELECT * FROM products ORDER BY 1 LIMIT %d OFFSET %d", limit, offset)
 	rows, err := r.Db.Query(fmt.Sprintf("SELECT * FROM products ORDER BY 1 LIMIT %d OFFSET %d", limit, offset))
 	if err != nil {
 		return nil, err
@@ -46,4 +58,17 @@ func (r *ProductRepository) Find(limit, offset int) ([]entity.Product, error) {
 	}
 
 	return products, nil
+}
+
+func (r *ProductRepository) FindOne(id int) (entity.Product, error) {
+	var product entity.Product
+	err := r.Db.QueryRow("SELECT * FROM products WHERE id=?", id).Scan(&product.ID, &product.Name, &product.Description, &product.Price)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return entity.Product{}, fmt.Errorf("product with ID %d not found", id)
+		}
+		return entity.Product{}, err
+	}
+
+	return product, nil
 }

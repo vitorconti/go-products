@@ -41,6 +41,7 @@ func (c *RetriveProductUseCase) Execute(input ProductPaginationQueryParamsDTO) (
 
 		product := dto.ProductOutputDTO{
 			ID:          retrievedProduct.ID,
+			Name:        retrievedProduct.Name,
 			Price:       retrievedProduct.Price,
 			Description: retrievedProduct.Description,
 		}
