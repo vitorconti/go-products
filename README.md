@@ -49,7 +49,7 @@ Creates a new product. The request body should contain JSON data with the follow
   "price": 10.99
 }
 ```
-PUT /products/:id
+PUT /products
 Updates an existing product. The request body should contain JSON data with the following properties:
 
 ```json
