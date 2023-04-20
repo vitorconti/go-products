@@ -15,16 +15,20 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{Db: db}
 }
 
-func (r *ProductRepository) Save(product *entity.Product) error {
+func (r *ProductRepository) Save(product *entity.Product) (int64, error) {
 	stmt, err := r.Db.Prepare("INSERT INTO products (name,description,price) VALUES (?, ?,?)")
 	if err != nil {
-		return err
+		return 0, err
 	}
-	_, err = stmt.Exec(product.Name, product.Description, product.Price)
+	res, err := stmt.Exec(product.Name, product.Description, product.Price)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
 func (r *ProductRepository) Edit(product *entity.Product) error {
@@ -70,7 +74,7 @@ func (r *ProductRepository) Find(limit, offset int) ([]entity.Product, error) {
 	return products, nil
 }
 
-func (r *ProductRepository) FindOne(id int) (entity.Product, error) {
+func (r *ProductRepository) FindOne(id int64) (entity.Product, error) {
 	var product entity.Product
 	err := r.Db.QueryRow("SELECT * FROM products WHERE id=?", id).Scan(&product.ID, &product.Name, &product.Description, &product.Price)
 	if err != nil {
